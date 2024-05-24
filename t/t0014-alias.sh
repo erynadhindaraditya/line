@@ -44,4 +44,10 @@ test_expect_success 'run-command formats empty args properly' '
     test_cmp expect actual
 '
 
+test_expect_success 'tracing a shell alias with arguments shows trace of prepared command' '
+	git config alias.echo "!echo \$*" &&
+	env GIT_TRACE=1 git echo argument 2>output &&
+	test_grep "^trace: prepare_cmd:.*" output
+'
+
 test_done

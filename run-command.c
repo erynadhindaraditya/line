@@ -296,6 +296,7 @@ static const char **prepare_shell_cmd(struct strvec *out, const char **argv)
 	}
 
 	strvec_pushv(out, argv);
+	trace_argv_printf(&out->v[1], "trace: prepare_cmd:");
 	return out->v;
 }
 
@@ -435,6 +436,7 @@ static int prepare_cmd(struct strvec *out, const struct child_process *cmd)
 		}
 	}
 
+	trace_argv_printf(&out->v[1], "trace: prepare_cmd:");
 	return 0;
 }
 
