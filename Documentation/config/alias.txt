@@ -21,8 +21,30 @@ If the alias expansion is prefixed with an exclamation point,
 it will be treated as a shell command.  For example, defining
 `alias.new = !gitk --all --not ORIG_HEAD`, the invocation
 `git new` is equivalent to running the shell command
-`gitk --all --not ORIG_HEAD`.  Note that shell commands will be
-executed from the top-level directory of a repository, which may
-not necessarily be the current directory.
-`GIT_PREFIX` is set as returned by running `git rev-parse --show-prefix`
-from the original current directory. See linkgit:git-rev-parse[1].
+`gitk --all --not ORIG_HEAD`.  Note:
++
+* Shell commands will be executed from the top-level directory of a
+  repository, which may not necessarily be the current directory.
+* `GIT_PREFIX` is set as returned by running `git rev-parse --show-prefix`
+  from the original current directory. See linkgit:git-rev-parse[1].
+* If the shell alias is the full path to a binary, it will be executed
+  directly with any arguments.
+* If the alias contains any whitespace or reserved characters, it will
+  be considered an inline script and run as an argument to `sh -c`.
+* When running as a script, Git appends "$@" to the alias shell
+  command when arguments are present.  If there are no arguments,
+  `"$@"` will not be appended.
+** This may initially be confusing if your alias script references
+   argument variables, or is otherwise not expecting the presence of
+   `"$@"`.  For example: `alias.echo = "!echo $1"` when run as `git
+   echo arg` will actually execute `sh -c "echo $1 $@" "echo $1"
+   "arg"` resulting in output `arg arg`.  An alias `alias.for = "!for
+   i in 1 2 3; do echo $i; done"` will fail if any arguments are
+   specified to `git for` as the appended `"$@"` will create invalid
+   shell syntax.
+** A convenient way to deal with this is to write your script
+   operations in an inline function that is then called with any
+   arguments from the command-line.  For example `alias.echo = "!e() {
+   echo $* ; }; e" will work as expected, with the function `e`
+   receiving any arugments from the command-line.
+** Setting `GIT_TRACE=1` can help debug the command being run.

@@ -745,6 +745,7 @@ fail_pipe:
 			error_errno("cannot run %s", cmd->args.v[0]);
 		goto end_of_spawn;
 	}
+	trace_argv_printf(&argv.v[1], "trace: prepare_cmd:");
 
 	if (pipe(notify_pipe))
 		notify_pipe[0] = notify_pipe[1] = -1;
@@ -912,6 +913,7 @@ end_of_spawn:
 		cmd->args.v = prepare_git_cmd(&nargv, sargv);
 	else if (cmd->use_shell)
 		cmd->args.v = prepare_shell_cmd(&nargv, sargv);
+	trace_argv_printf(&cmd->args.v[1], "trace: prepare_cmd:");
 
 	cmd->pid = mingw_spawnvpe(cmd->args.v[0], cmd->args.v,
 				  (char**) cmd->env.v,
